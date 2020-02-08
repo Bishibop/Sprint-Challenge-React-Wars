@@ -5,7 +5,7 @@ const StyledCharacter = styled.div`
   background-color: white;
   padding: 15px 50px;
   border-radius: 10px;
-  margin: 20px;
+  margin: 20px 10px;
   flex-basis: 20%;
 `;
 

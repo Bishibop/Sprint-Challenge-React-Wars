@@ -3,8 +3,9 @@ import axios from 'axios';
 import styled from 'styled-components';
 import './App.css';
 import Character from './Character';
+import PaginationButton from './PaginationButton';
 
-const starwarsApiUrl = 'https://swapi.co/api/people/';
+const initialCharactersUrl = 'https://swapi.co/api/people/';
 
 const StyledApp = styled.div`
   width: 80%;
@@ -17,13 +18,28 @@ const StyledCharacterContainer = styled.div`
   justify-content: space-between;
 `;
 
+const StyledButtonContainer = styled.div`
+  margin: 50px auto;
+  text-align: center;
+`;
+
 const App = () => {
   const [characters, setCharacters] = useState([]);
+  const [nextPageUrl, setNextPageUrl] = useState();
+  const [previousPageUrl, setPreviousPageUrl] = useState();
+
+  function getCharacters(characterUrl) {
+    axios.get(characterUrl).then(res => {
+      console.log(res.data);
+      setNextPageUrl(res.data.next);
+      setPreviousPageUrl(res.data.previous);
+      setCharacters(res.data.results);
+      console.log("pagination urls: ", res.data.next, res.data.previous);
+    });
+  }
 
   useEffect(() => {
-    axios.get(starwarsApiUrl).then(res => {
-      setCharacters(res.data.results);
-    });
+    getCharacters(initialCharactersUrl);
   }, []);
 
 
@@ -37,6 +53,10 @@ const App = () => {
   return (
     <StyledApp className>
       <h1 className='Header'>React Wars</h1>
+      <StyledButtonContainer>
+        <PaginationButton text='Previous' url={previousPageUrl} callback={() => getCharacters(previousPageUrl)} />
+        <PaginationButton text='Next' url={nextPageUrl} callback={() => {getCharacters(nextPageUrl)} }/>
+      </StyledButtonContainer>
       <StyledCharacterContainer>
         {characters.map(character => 
         <Character key={character.url} characterData={character} />
